@@ -40,7 +40,7 @@ Standard Docker commands (`docker logs -f`) are limited when dealing with comple
 
 Docklog interfaces directly with the local Docker Engine API via the Unix socket (`/var/run/docker.sock` or Windows Pipe). 
 
-It dynamically discovers running containers and listens for Docker Engine `start` and `die` events to attach or detach streams automatically—meaning you can start Docklog, and it will automatically pick up containers that are started later.
+It dynamically discovers running containers and listens for Docker Engine `start` and `die` events to attach or detach streams automatically, meaning you can start Docklog, and it will automatically pick up containers that are started later.
 
 The internal **Aggregator** utilizes concurrent `io.Pipe` streams, processing Stdout and Stderr asynchronously through a centralized formatting and filtering pipeline, ensuring zero race conditions and thread-safe outputs.
 
