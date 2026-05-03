@@ -56,5 +56,5 @@ var smellErrorCmd = &cobra.Command{
 }
 
 func init() {
-	startCmd.AddCommand(smellErrorCmd)
+	rootCmd.AddCommand(smellErrorCmd)
 }
