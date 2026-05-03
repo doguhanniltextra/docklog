@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Reference | Docklog Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="top-nav">
+        <div class="nav-left">
+            <a href="index.html" class="logo">
+                <img src="docklog.png" alt="Docklog Logo" class="logo-img">
+                DOCKLOG
+            </a>
+            <nav class="nav-links">
+                <a href="index.html">Overview</a>
+                <a href="commands.html" class="active">Reference</a>
+                <a href="https://github.com/doguhanniltextra/docklog">
+                    <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: middle;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                    Source
+                </a>
+            </nav>
+        </div>
+        <div class="search-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
+    </header>
+
+    <div class="breadcrumbs">
+        <div class="breadcrumb-trail">
+            <a href="#">DOCKLOG</a><span>&rsaquo;</span>Technical Reference
+        </div>
+    </div>
+
+    <main class="container">
+        <h1>Command & Flag Reference</h1>
+        
+        <p class="intro">
+            Comprehensive specification of Docklog commands and operational flags for log processing.
+        </p>
+
+        <section id="core-commands">
+            <h2>Core Commands</h2>
+            <ul>
+                <li><strong>docklog check</strong>: Diagnostics for Docker socket connectivity and API compatibility.</li>
+                <li><strong>docklog start</strong>: Main entry point for log aggregation and stream processing.</li>
+                <li><strong>docklog smell-error</strong>: Pre-configured execution profile for high-velocity error pattern detection.</li>
+            </ul>
+        </section>
+
+        <section id="flag-reference">
+            <h2>Flag Reference</h2>
+            <p>Operational parameters available for the <code>start</code> command:</p>
+            <ul>
+                <li><code>--container, -c</code>: Regex filter for container name matching.</li>
+                <li><code>--filter, -f</code>: Substring inclusion filter for log messages.</li>
+                <li><code>--exclude, -x</code>: Substring exclusion filter (inverse matching).</li>
+                <li><code>--redact</code>: Enables the data masking engine for PII (IPv4, Emails, Tokens).</li>
+                <li><code>--json</code>: Switches output encoding to structured JSON.</li>
+                <li><code>--dedupe</code>: Suppresses consecutive identical log messages.</li>
+                <li><code>--tail, -t</code>: Set initial buffer size from historical logs (Default: 10 lines).</li>
+                <li><code>--since, -s</code>: Temporal filter for historical logs (RFC3339 or duration e.g., 5m).</li>
+                <li><code>--output, -o</code>: Specifies a file path for persistent serialization.</li>
+            </ul>
+        </section>
+
+        <section id="execution-patterns">
+            <h2>Execution Patterns</h2>
+            <p>Flags can be composed to implement specific observability logic:</p>
+            
+            <div class="command-box">
+                <h3>Log Stream Denoising</h3>
+                <p>Aggregation across microservices with keyword filtering and healthcheck exclusion:</p>
+                <pre><code>docklog start --container "^app-.*" --filter "ERROR" --exclude "healthcheck" --dedupe</code></pre>
+            </div>
+
+            <div class="command-box">
+                <h3>Secure Stream Auditing</h3>
+                <p>Monitoring event streams while redacting sensitive fields via the internal masking engine:</p>
+                <pre><code>docklog start --filter "auth-event" --redact</code></pre>
+            </div>
+
+            <div class="command-box">
+                <h3>Temporal Investigation</h3>
+                <p>Historical log retrieval for specific service instances with custom buffers:</p>
+                <pre><code>docklog start --container "postgres-db" --since 30m --tail 500</code></pre>
+            </div>
+
+            <div class="command-box">
+                <h3>Structured Data Pipeline</h3>
+                <p>Persistent JSON serialization for downstream consumption (e.g., via <code>jq</code>):</p>
+                <pre><code>docklog start --json --output production_dump.json</code></pre>
+            </div>
+
+            <div class="command-box">
+                <h3>Regex Pattern Extraction</h3>
+                <p>Global status code monitoring across all active container streams:</p>
+                <pre><code>docklog start --regex "HTTP/1.1 [5][0-9][0-9]"</code></pre>
+            </div>
+        </section>
+
+        <section id="data-serialization">
+            <h2>Data Serialization Examples</h2>
+            
+            <div class="callout">
+                <h4>ANSI Colored Stream</h4>
+                <p>Standard terminal output with container-specific color tagging:</p>
+                <pre><code>INFO  [10:30:00] container="auth-svc" User "john_doe" logged in.
+WARN  [10:30:05] container="api-gateway" Rate limit approaching for IP 192.168.1.50
+ERROR [10:30:10] container="db-prod" Failed to acquire lock on table 'orders'</code></pre>
+            </div>
+
+            <div class="callout">
+                <h4>Redacted Stream</h4>
+                <p>Output after passing through the masking transformation layer:</p>
+                <pre><code>INFO [10:35:00] container="web-app" Password reset requested for ****@****.com
+INFO [10:35:01] container="web-app" Login attempt from ***.***.***.***</code></pre>
+            </div>
+
+            <div class="callout">
+                <h4>JSON Object Structure</h4>
+                <p>Schema for structured output serialization:</p>
+                <pre><code>{
+  "container": "api-gateway",
+  "message": "GET /health 200 OK",
+  "is_error": false,
+  "timestamp": "2026-05-03T10:40:00Z"
+}</code></pre>
+            </div>
+        </section>
+
+    </main>
+</body>
+</html>

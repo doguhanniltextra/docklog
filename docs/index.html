@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Overview | Docklog Documentation</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="top-nav">
+        <div class="nav-left">
+            <a href="index.html" class="logo">
+                <img src="docklog.png" alt="Docklog Logo" class="logo-img">
+                DOCKLOG
+            </a>
+            <nav class="nav-links">
+                <a href="index.html" class="active">Overview</a>
+                <a href="commands.html">Reference</a>
+                <a href="https://github.com/doguhanniltextra/docklog">
+                    <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: middle;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
+                    Source
+                </a>
+            </nav>
+        </div>
+        <div class="search-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
+    </header>
+
+    <div class="breadcrumbs">
+        <div class="breadcrumb-trail">
+            <a href="#">DOCKLOG</a><span>&rsaquo;</span>System Overview
+        </div>
+    </div>
+
+    <main class="container">
+        <h1>Technical Documentation</h1>
+        
+        <p class="intro">
+            Docklog is a CLI-based log aggregator designed for real-time stream processing, filtering, and data masking across Docker container environments.
+        </p>
+
+        <section id="system-logic">
+            <h2>Core Logic</h2>
+            <p>
+                The utility interfaces directly with the Docker Socket (<code>/var/run/docker.sock</code>) to discover and attach to container log streams. It implements a non-blocking ingestion pipeline that applies regex-based transformations and keyword filters before terminal or file serialization.
+            </p>
+        </section>
+
+        <section id="operational-scenarios">
+            <h2>Operational Scenarios</h2>
+            <ul>
+                <li><strong>Local Debugging:</strong> Aggregating logs from multiple microservices into a single, chronologically sorted terminal stream.</li>
+                <li><strong>Security Compliance:</strong> Real-time redaction of IPv4 addresses, emails, and authorization tokens to prevent PII leakage in shared environments.</li>
+                <li><strong>Anomaly Detection:</strong> High-speed filtering for specific error patterns or status codes using standard regex engines.</li>
+            </ul>
+        </section>
+
+        <section id="technical-constraints">
+            <h2>Technical Environment</h2>
+            <p>
+                Optimized for environments where engineers require high-fidelity log visibility without the overhead of heavy-weight observability stacks (ELK/Loki).
+            </p>
+            <ul>
+                <li><strong>Runtime:</strong> Statically compiled binary (Go), zero external dependencies.</li>
+                <li><strong>Access:</strong> Requires read access to the Docker daemon.</li>
+                <li><strong>Output:</strong> Supports standard ANSI color-coded text and structured JSON.</li>
+            </ul>
+        </section>
+
+    </main>
+</body>
+</html>

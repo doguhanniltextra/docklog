@@ -1,0 +1,289 @@
+:root {
+    --bg-color: #FFFFFF;
+    --text-primary: #1A1A1A;
+    --text-secondary: #374151;
+    --text-muted: #6B7280;
+    --accent-purple: #1d4ed8;
+    --accent-blue: #2563EB;
+    --border-color: #E5E7EB;
+    --code-bg: #F3F4F6;
+    --max-width: 900px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Header & Navigation */
+.top-nav {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1000;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1d4ed8;
+    /* Deep Blue from docklog.png */
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-img {
+    height: 32px;
+    width: auto;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 16px;
+    font-weight: 500;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.nav-links a:hover {
+    color: var(--accent-blue);
+    text-decoration: underline;
+}
+
+.nav-links a.active {
+    color: var(--accent-purple);
+}
+
+.search-icon {
+    color: var(--text-muted);
+    cursor: pointer;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    max-width: var(--max-width);
+    margin: 2rem auto 0;
+    padding: 0 2rem;
+    font-size: 14px;
+    color: var(--text-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.breadcrumb-trail a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.breadcrumb-trail span {
+    margin: 0 0.5rem;
+}
+
+/* Main Content Layout */
+.container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+h1 {
+    font-size: 48px;
+    font-weight: 600;
+    color: #000000;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+    line-height: 1.1;
+}
+
+h2 {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 4rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+}
+
+h3 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+p {
+    margin-bottom: 1.5rem;
+}
+
+.intro {
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+}
+
+/* Lists */
+ul {
+    margin-bottom: 2rem;
+    padding-left: 1.5rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+}
+
+li::marker {
+    color: var(--text-muted);
+    content: "- ";
+}
+
+/* Code */
+code {
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    background-color: var(--code-bg);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+pre {
+    background-color: var(--code-bg);
+    padding: 1.5rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+pre code {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* Callouts/Cards */
+.callout {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    background: white;
+}
+
+.callout h4 {
+    margin-bottom: 1rem;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+/* Links */
+a {
+    color: var(--accent-blue);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Footer */
+footer {
+    border-top: 1px solid var(--border-color);
+    padding: 2rem;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4rem;
+}
+
+/* Command Examples Styling */
+.command-box {
+    border-left: 4px solid var(--accent-purple);
+    background: #FAFAFA;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    border-radius: 0 8px 8px 0;
+    border-top: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.command-box h3 {
+    margin-top: 0;
+    font-size: 18px;
+    color: var(--accent-purple);
+}
+
+.command-box p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.command-box pre {
+    margin: 0;
+    background: #1E1E1E;
+    /* Dark terminal look */
+    color: #E5E7EB;
+}
+
+.command-box pre code {
+    color: #E5E7EB;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 36px;
+    }
+
+    h2 {
+        font-size: 28px;
+    }
+
+    .top-nav {
+        padding: 0 1rem;
+    }
+
+    .nav-links {
+        display: none;
+    }
+}
