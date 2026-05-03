@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/doguhanniltextra/docklog/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -16,8 +17,9 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "docklog",
-	Short: "A real-time terminal log aggregator for Docker",
+	Use:     "docklog",
+	Short:   "A real-time terminal log aggregator for Docker",
+	Version: config.Version,
 	Long: `Docklog is a CLI application that discovers running Docker containers 
 and aggregates their stdout/stderr streams into a single, color-coded, 
 and filterable terminal view.`,

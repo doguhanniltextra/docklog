@@ -6,6 +6,10 @@ import (
 	"github.com/fatih/color"
 )
 
+// Version is the current version of the application.
+// It is defined here to allow build-time injection using -ldflags.
+var Version = "v1.1.0"
+
 // Config defines the operational parameters for the Log Aggregator.
 // It acts as the central configuration object that determines how logs are
 // collected, filtered, and presented to the user.
