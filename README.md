@@ -51,6 +51,8 @@ Docklog interfaces directly with the local Docker Engine API via the Unix socket
 
 It dynamically discovers running containers and listens for Docker Engine `start` and `die` events to attach or detach streams automatically — meaning you can start Docklog once, and it will automatically pick up containers that are started later.
 
+For a detailed visual breakdown of the internal package integration and concurrency model, see the [Architecture Flow Documentation](docs/architecture.md).
+
 The internal **Pipeline** utilizes concurrent `io.Pipe` streams, processing Stdout and Stderr asynchronously through a centralized formatting and filtering engine, ensuring zero race conditions and thread-safe outputs.
 
 ---
