@@ -42,3 +42,4 @@ tasks/
 .agents/
 
 docklog
+production_dump.json

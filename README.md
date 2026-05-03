@@ -3,6 +3,9 @@
 </p>
 
 
+> [!IMPORTANT]
+> **This project is currently under active development.** Features are subject to change, and still working hard to reach a stable 1.0 release.
+
 **Docklog** is a optimized, multiplexed, real-time log aggregator and tracking CLI for Docker. 
 
 Designed for power-users, SREs, and backend developers, Docklog solves the problem of "log blindness" by allowing you to attach to multiple containers simultaneously, filter noise at the source, deduplicate spam, and format outputs for both human readability and machine ingestion.
