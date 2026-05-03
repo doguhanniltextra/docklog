@@ -62,7 +62,7 @@ The internal **Pipeline** utilizes concurrent `io.Pipe` streams, processing Stdo
 ### Using Go Install (Recommended)
 
 ```bash
-go install github.com/doguhanniltextra/docklog@latest
+go install github.com/doguhanniltextra/docklog@v1.2.0
 ```
 
 Ensure your `$GOPATH/bin` is in your system's `$PATH`. You can verify the installation by running:
