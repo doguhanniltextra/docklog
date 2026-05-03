@@ -12,6 +12,10 @@
 
 Designed for power-users, SREs, and backend developers, Docklog solves the problem of "log blindness" by allowing you to attach to multiple containers simultaneously, filter noise at the source, deduplicate spam, and format outputs for both human readability and machine ingestion.
 
+<p align="center">
+  <img src="utils/example.gif" alt="Docklog Demo" width="800">
+</p>
+
 ---
 
 ## Table of Contents
