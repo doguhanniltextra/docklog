@@ -123,7 +123,7 @@ Automatically mask sensitive data (Emails, IPv4, Bearer Tokens, API Keys) in you
 docklog start --redact
 ```
 
-> **Eğer ki AI ile çalışıyorsanız ona hatanızı yapıştırmadan önce şifrelerinizi korumak için önerilir.**
+> **If you're working with AI, it's recommended to protect your passwords before you paste your mistakes into it.**
 
 
 ### Spam Deduplication (Smell Error)
