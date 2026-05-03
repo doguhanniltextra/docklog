@@ -1,3 +1,6 @@
+// Package config handles the application's configuration management.
+// It defines the central Config struct which governs how logs are collected,
+// filtered, and outputted, along with default values for a seamless out-of-the-box experience.
 package config
 
 import (

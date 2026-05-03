@@ -1,8 +1,12 @@
+// Package docker implements the LogSource interface for the Docker Engine.
+// It handles container discovery, event monitoring, and log stream multiplexing
+// specifically for Docker environments.
 package docker
 
 import (
 	"bufio"
 	"context"
+	"fmt"
 	"io"
 	"strconv"
 	"strings"
@@ -18,17 +22,25 @@ import (
 	logtypes "github.com/doguhanniltextra/docklog/pkg/types"
 )
 
+// DockerSource manages the lifecycle of log streams from Docker containers.
+// It uses the Docker SDK to interact with the Docker daemon.
 type DockerSource struct {
-	cli        *client.Client
-	cfg        *config.Config
+	// cli is the negotiated Docker API client.
+	cli *client.Client
+	// cfg contains the filtering and collection parameters.
+	cfg *config.Config
+	// containers tracks active cancellation functions for individual log streams.
 	containers map[string]context.CancelFunc
-	mu         sync.Mutex
+	// mu synchronizes access to the internal containers map.
+	mu sync.Mutex
 }
 
+// NewDockerSource creates a new DockerSource and initializes the Docker client.
+// It automatically detects the API version of the local Docker daemon.
 func NewDockerSource(cfg *config.Config) (*DockerSource, error) {
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to init docker client for source: %w", err)
 	}
 
 	return &DockerSource{
@@ -38,18 +50,21 @@ func NewDockerSource(cfg *config.Config) (*DockerSource, error) {
 	}, nil
 }
 
+// Run starts the Docker log collection process.
+// It first attaches to all currently running containers, then enters a loop
+// listening for Docker events (start/die) to dynamically adjust the monitored set.
 func (s *DockerSource) Run(ctx context.Context, logChan chan<- logtypes.LogMessage) error {
-	// List current running containers
+	// Initial discovery of running containers
 	containers, err := s.cli.ContainerList(ctx, container.ListOptions{})
 	if err != nil {
-		return err
+		return fmt.Errorf("initial container list failed: %w", err)
 	}
 
 	for _, c := range containers {
 		s.startContainerStream(ctx, c.ID, s.getContainerName(c.Names), logChan)
 	}
 
-	// Listen for events
+	// Dynamic discovery via event stream
 	msgs, errs := s.cli.Events(ctx, types.EventsOptions{})
 	for {
 		select {
@@ -57,7 +72,7 @@ func (s *DockerSource) Run(ctx context.Context, logChan chan<- logtypes.LogMessa
 			return nil
 		case err := <-errs:
 			if err != nil {
-				return err
+				return fmt.Errorf("docker source event error: %w", err)
 			}
 		case msg := <-msgs:
 			if msg.Type == events.ContainerEventType {
@@ -72,6 +87,7 @@ func (s *DockerSource) Run(ctx context.Context, logChan chan<- logtypes.LogMessa
 	}
 }
 
+// getContainerName strips the leading slash from Docker container names.
 func (s *DockerSource) getContainerName(names []string) string {
 	if len(names) > 0 {
 		return strings.TrimPrefix(names[0], "/")
@@ -79,7 +95,10 @@ func (s *DockerSource) getContainerName(names []string) string {
 	return "unknown"
 }
 
+// startContainerStream attaches to a container's logs and pumps them into logChan.
+// It respects the --container regex filter provided in the configuration.
 func (s *DockerSource) startContainerStream(ctx context.Context, id, name string, logChan chan<- logtypes.LogMessage) {
+	// Early exit if container name doesn't match the user-defined filter
 	if s.cfg.ContainerFilter != nil && !s.cfg.ContainerFilter.MatchString(name) {
 		return
 	}
@@ -89,6 +108,7 @@ func (s *DockerSource) startContainerStream(ctx context.Context, id, name string
 		s.mu.Unlock()
 		return
 	}
+	// Context used to stop this specific stream when the container dies or app exits
 	streamCtx, cancel := context.WithCancel(ctx)
 	s.containers[id] = cancel
 	s.mu.Unlock()
@@ -104,6 +124,7 @@ func (s *DockerSource) startContainerStream(ctx context.Context, id, name string
 			Timestamps: s.cfg.ShowTimestamps,
 		}
 
+		// Handle time-based log retrieval
 		if s.cfg.Since != "" {
 			if dur, err := time.ParseDuration(s.cfg.Since); err == nil {
 				options.Since = strconv.FormatInt(time.Now().Add(-dur).Unix(), 10)
@@ -118,6 +139,8 @@ func (s *DockerSource) startContainerStream(ctx context.Context, id, name string
 		}
 		defer reader.Close()
 
+		// Docker's log protocol multiplexes Stdout and Stderr into a single stream.
+		// We use stdcopy to demultiplex them into separate pipes for processing.
 		stdoutR, stdoutW := io.Pipe()
 		stderrR, stderrW := io.Pipe()
 
@@ -131,6 +154,7 @@ func (s *DockerSource) startContainerStream(ctx context.Context, id, name string
 	}()
 }
 
+// stopContainerStream cancels the stream context and removes it from the tracking map.
 func (s *DockerSource) stopContainerStream(id string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -140,6 +164,8 @@ func (s *DockerSource) stopContainerStream(id string) {
 	}
 }
 
+// readStream scans a demultiplexed reader (Stdout or Stderr) and pushes messages
+// to the output channel.
 func (s *DockerSource) readStream(r io.Reader, name string, isError bool, logChan chan<- logtypes.LogMessage) {
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
