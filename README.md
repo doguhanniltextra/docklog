@@ -7,8 +7,6 @@
 > [!IMPORTANT]
 > **This project is currently under active development.** Features are subject to change, and still working hard to reach a stable 1.0 release.
 
-**Docklog** is a optimized, multiplexed, real-time log aggregator and tracking CLI for Docker. 
-=======
 <p align="center"><strong>Docklog</strong> is a optimized, multiplexed, real-time log aggregator and tracking CLI for Docker. </p>
 
 
