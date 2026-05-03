@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -25,6 +26,13 @@ import (
 
 	"docklog/pkg/config"
 )
+
+var redactPatterns = []*regexp.Regexp{
+	regexp.MustCompile(`[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}`),             // Email
+	regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`),                                // IPv4
+	regexp.MustCompile(`(?i)bearer\s+[A-Za-z0-9\-\._~\+/]+=*`),                       // Bearer Token
+	regexp.MustCompile(`(?i)(api[_-]?key)\s*[:=]\s*['"]?[A-Za-z0-9\-\._~\+/]+['"]?`), // API Key
+}
 
 // LogMessage encapsulates a single line of log output retrieved from a container.
 // It includes structural metadata required for JSON formatting and filtering.
@@ -217,6 +225,12 @@ func (a *Aggregator) readStream(r io.Reader, name string, isError bool) {
 		filterLower := strings.ToLower(a.cfg.Filter)
 		if filterLower != "" && !strings.Contains(strings.ToLower(text), filterLower) {
 			continue
+		}
+
+		if a.cfg.Redact {
+			for _, pattern := range redactPatterns {
+				text = pattern.ReplaceAllString(text, "***")
+			}
 		}
 
 		a.logChan <- LogMessage{

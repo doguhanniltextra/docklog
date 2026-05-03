@@ -66,6 +66,10 @@ type Config struct {
 	// When true, consecutive identical log messages from the same container
 	// are dropped to keep the terminal output clean.
 	Deduplicate bool
+
+	// Redact enables the automatic redaction of sensitive information.
+	// When true, emails, IPv4 addresses, and tokens are replaced with "***".
+	Redact bool
 }
 
 // DefaultConfig instantiates and returns the default configuration for the aggregator.

@@ -115,6 +115,17 @@ docklog start --output logs.txt
 docklog start --json --output logs.json
 ```
 
+### Masking / Censoring (Redact)
+
+Automatically mask sensitive data (Emails, IPv4, Bearer Tokens, API Keys) in your logs. When enabled, matching patterns are replaced with `***` before being printed or written to a file.
+
+```bash
+docklog start --redact
+```
+
+> **Eğer ki AI ile çalışıyorsanız ona hatanızı yapıştırmadan önce şifrelerinizi korumak için önerilir.**
+
+
 ### Spam Deduplication (Smell Error)
 
 Docklog comes with a specialized command specifically for debugging critical failures without being overwhelmed by recursive error spam.

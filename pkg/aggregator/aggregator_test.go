@@ -18,10 +18,10 @@ func TestReadStream(t *testing.T) {
 		wantOutput []string
 	}{
 		{
-			name: "No filters, multiple lines",
-			cfg:  &config.Config{},
-			input: "line 1\nline 2\nline 3\n",
-			isError: false,
+			name:       "No filters, multiple lines",
+			cfg:        &config.Config{},
+			input:      "line 1\nline 2\nline 3\n",
+			isError:    false,
 			wantOutput: []string{"line 1", "line 2", "line 3"},
 		},
 		{
@@ -29,8 +29,8 @@ func TestReadStream(t *testing.T) {
 			cfg: &config.Config{
 				Filter: "ERROR",
 			},
-			input: "this is fine\nthis has an eRRoR\nerror here too\n",
-			isError: false,
+			input:      "this is fine\nthis has an eRRoR\nerror here too\n",
+			isError:    false,
 			wantOutput: []string{"this has an eRRoR", "error here too"},
 		},
 		{
@@ -38,8 +38,8 @@ func TestReadStream(t *testing.T) {
 			cfg: &config.Config{
 				Exclude: "ignore",
 			},
-			input: "process 1 ok\nprocess 2 IGNORE this\nprocess 3 ok\n",
-			isError: false,
+			input:      "process 1 ok\nprocess 2 IGNORE this\nprocess 3 ok\n",
+			isError:    false,
 			wantOutput: []string{"process 1 ok", "process 3 ok"},
 		},
 		{
@@ -47,8 +47,8 @@ func TestReadStream(t *testing.T) {
 			cfg: &config.Config{
 				RegexFilter: regexp.MustCompile(`^\[\d+\] .*`),
 			},
-			input: "[123] process started\n[abc] invalid log\n[456] process ended\n",
-			isError: false,
+			input:      "[123] process started\n[abc] invalid log\n[456] process ended\n",
+			isError:    false,
 			wantOutput: []string{"[123] process started", "[456] process ended"},
 		},
 		{
@@ -57,8 +57,8 @@ func TestReadStream(t *testing.T) {
 				Filter:  "INFO",
 				Exclude: "spam",
 			},
-			input: "INFO: starting\nINFO: spam message\nWARN: something else\nINFO: ended\n",
-			isError: false,
+			input:      "INFO: starting\nINFO: spam message\nWARN: something else\nINFO: ended\n",
+			isError:    false,
 			wantOutput: []string{"INFO: starting", "INFO: ended"},
 		},
 	}
