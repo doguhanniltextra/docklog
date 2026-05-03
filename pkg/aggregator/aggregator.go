@@ -24,7 +24,7 @@ import (
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/fatih/color"
 
-	"docklog/pkg/config"
+	"github.com/doguhanniltextra/docklog/pkg/config"
 )
 
 var redactPatterns = []*regexp.Regexp{

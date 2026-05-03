@@ -1,7 +1,7 @@
 package main
 
 import (
-	"docklog/cmd"
+	"github.com/doguhanniltextra/docklog/cmd"
 )
 
 func main() {

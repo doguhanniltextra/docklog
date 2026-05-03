@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"docklog/pkg/config"
+	"github.com/doguhanniltextra/docklog/pkg/config"
 )
 
 func TestReadStream(t *testing.T) {

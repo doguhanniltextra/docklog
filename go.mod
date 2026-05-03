@@ -1,4 +1,4 @@
-module docklog
+module github.com/doguhanniltextra/docklog
 
 go 1.25.0
 

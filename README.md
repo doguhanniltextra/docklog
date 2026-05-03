@@ -53,15 +53,21 @@ The internal **Aggregator** utilizes concurrent `io.Pipe` streams, processing St
 
 ## Installation
 
-Ensure you have [Go 1.21+](https://go.dev/) installed.
+### Using Go Install (Recommended)
+```bash
+go install github.com/doguhanniltextra/docklog@latest
+```
+
+### From Source
+Ensure you have [Go 1.25+](https://go.dev/) installed.
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/docklog.git
+git clone https://github.com/doguhanniltextra/docklog.git
 cd docklog
 
-# Install the binary
-go install
+# Build the binary
+go build -o docklog
 ```
 
 Ensure your `$GOPATH/bin` is in your system's `$PATH`.

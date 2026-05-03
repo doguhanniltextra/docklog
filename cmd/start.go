@@ -8,8 +8,8 @@ import (
 	"regexp"
 	"syscall"
 
-	"docklog/pkg/aggregator"
-	"docklog/pkg/config"
+	"github.com/doguhanniltextra/docklog/pkg/aggregator"
+	"github.com/doguhanniltextra/docklog/pkg/config"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

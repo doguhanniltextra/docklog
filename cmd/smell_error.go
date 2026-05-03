@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"docklog/pkg/aggregator"
+	"github.com/doguhanniltextra/docklog/pkg/aggregator"
 
 	"github.com/spf13/cobra"
 )
