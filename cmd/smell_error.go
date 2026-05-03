@@ -1,13 +1,7 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
-
-	"github.com/doguhanniltextra/docklog/pkg/aggregator"
 
 	"github.com/spf13/cobra"
 )
@@ -35,23 +29,7 @@ var smellErrorCmd = &cobra.Command{
 		cfg.Filter = "error"   // Auto filter for error
 		cfg.Deduplicate = true // Enable our new spam filter
 
-		agg, err := aggregator.New(cfg)
-		if err != nil {
-			return err
-		}
-
-		ctx, cancel := context.WithCancel(context.Background())
-		defer cancel()
-
-		sigCh := make(chan os.Signal, 1)
-		signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-		go func() {
-			<-sigCh
-			fmt.Println("\nShutting down docklog...")
-			cancel()
-		}()
-
-		return agg.Start(ctx)
+		return runPipeline(cfg)
 	},
 }
 

@@ -177,3 +177,50 @@ func (s *DockerSource) readStream(r io.Reader, name string, isError bool, logCha
 		}
 	}
 }
+
+// ContainerStatus represents the monitoring state of a specific Docker container.
+// It is used for UI feedback (e.g., in the 'list' command) to show which containers
+// are currently being watched versus those being ignored by filters.
+type ContainerStatus struct {
+	// ID is the shortened (12-char) Docker container ID.
+	ID string
+	// Name is the human-readable container name.
+	Name string
+	// Image is the Docker image being run.
+	Image string
+	// Status is the raw status string from Docker (e.g., "Up 5 minutes").
+	Status string
+	// Uptime is a processed version of the status indicating how long it's been running.
+	Uptime string
+	// IsMatched indicates if this container passes the global --container regex filter.
+	IsMatched bool
+}
+
+// ListContainers performs a one-shot discovery of all running containers and
+// evaluates them against the provided configuration filters.
+// This is primarily used by the 'list' command for configuration previewing.
+func (s *DockerSource) ListContainers(ctx context.Context) ([]ContainerStatus, error) {
+	containers, err := s.cli.ContainerList(ctx, container.ListOptions{})
+	if err != nil {
+		return nil, fmt.Errorf("failed to list containers for discovery: %w", err)
+	}
+
+	var results []ContainerStatus
+	for _, c := range containers {
+		name := s.getContainerName(c.Names)
+		isMatched := true
+		if s.cfg.ContainerFilter != nil && !s.cfg.ContainerFilter.MatchString(name) {
+			isMatched = false
+		}
+
+		results = append(results, ContainerStatus{
+			ID:        c.ID[:12],
+			Name:      name,
+			Image:     c.Image,
+			Status:    c.Status,
+			Uptime:    c.Status, // Docker's Status field often contains uptime info
+			IsMatched: isMatched,
+		})
+	}
+	return results, nil
+}

@@ -13,6 +13,7 @@ import (
 	"github.com/doguhanniltextra/docklog/pkg/processor"
 	"github.com/doguhanniltextra/docklog/pkg/sink"
 	"github.com/doguhanniltextra/docklog/pkg/source/docker"
+	"github.com/spf13/cobra"
 )
 
 func runPipeline(cfg *config.Config) error {
@@ -78,4 +79,27 @@ func runPipeline(cfg *config.Config) error {
 	}()
 
 	return pipe.Run(ctx)
+}
+
+// runCmd represents the 'run' command, which acts as a modern alias for 'start'.
+// It leverages the same underlying pipeline architecture.
+var runCmd = &cobra.Command{
+	Use:   "run",
+	Short: "Starts the real-time log aggregator (alias for start)",
+	Long: `Connects to the Docker socket, discovers running containers, 
+and streams their logs to the terminal using the modular pipeline architecture.`,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Println("Docklog is starting. Press Ctrl+C to exit.")
+
+		cfg, err := buildConfig()
+		if err != nil {
+			return err
+		}
+
+		return runPipeline(cfg)
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(runCmd)
 }

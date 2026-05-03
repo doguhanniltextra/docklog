@@ -1,3 +1,6 @@
+// Package aggregator provides the core orchestration logic for the log processing
+// pipeline. It defines the interfaces for log sources and the Pipeline struct
+// that coordinates the flow of messages from sources to sinks through processors.
 package aggregator
 
 import (

@@ -6,7 +6,7 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/doguhanniltextra/docklog/pkg/aggregator"
+	"github.com/doguhanniltextra/docklog/pkg/source/docker"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
@@ -20,12 +20,12 @@ var listCmd = &cobra.Command{
 			return err
 		}
 
-		agg, err := aggregator.New(cfg)
+		src, err := docker.NewDockerSource(cfg)
 		if err != nil {
 			return err
 		}
 
-		containers, err := agg.ListContainers(context.Background())
+		containers, err := src.ListContainers(context.Background())
 		if err != nil {
 			return fmt.Errorf("error listing containers: %v", err)
 		}
