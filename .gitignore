@@ -43,3 +43,4 @@ tasks/
 
 docklog
 production_dump.json
+dist/

@@ -193,14 +193,15 @@ Flags passed via the CLI will always override the values in the configuration fi
 
 ## Contributing
 
-Contributions are welcome.
+Contributions are welcome. 
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
 3. Ensure tests pass (`go test -v ./...`)
-4. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-5. Push to the branch (`git push origin feature/amazing-feature`)
-6. Open a Pull Request
+4. **Verify release standards:** Run the [Release Checklist](docs/release_checklist.md) to ensure cross-platform compatibility.
+5. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
 ---
 
