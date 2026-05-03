@@ -45,7 +45,6 @@ echo -e "${YELLOW}[4/5] Running Portability Test (Alpine Linux)...${NC}"
 # If it runs there, it is truly statically linked and portable.
 if docker run --rm \
     -v $(pwd)/dist/docklog-audit-linux-amd64:/usr/local/bin/docklog \
-    -v /var/run/docker.sock:/var/run/docker.sock \
     alpine:latest docklog version; then
     echo -e "${GREEN}    SUCCESS:${NC} Binary is portable and runs on Alpine."
 else
