@@ -2,15 +2,12 @@
   <img src="utils/docklog.png" alt="Docklog Mascot" width="400">
 </p>
 
-
-
 > [!IMPORTANT]
-> **This project is currently under active development.** Features are subject to change, and still working hard to reach a stable 1.0 release.
+> **This project is currently under active development.** Features are subject to change, and we are working hard to reach a stable 1.0 release.
 
-<p align="center"><strong>Docklog</strong> is a optimized, multiplexed, real-time log aggregator and tracking CLI for Docker. </p>
+<p align="center"><strong>Docklog</strong> is an optimized, multiplexed, real-time log aggregator and tracking CLI for Docker.</p>
 
-
-Designed for power-users, SREs, and backend developers, Docklog solves the problem of "log blindness" by allowing you to attach to multiple containers simultaneously, filter noise at the source, deduplicate spam, and format outputs for both human readability and machine ingestion.
+Running multiple Docker containers and keep missing errors because they scroll away in different terminals? Docklog aggregates all your container logs into a single, color-coded stream so you never lose an error again.
 
 <p align="center">
   <img src="utils/example.gif" alt="Docklog Demo" width="800">
@@ -28,7 +25,8 @@ Designed for power-users, SREs, and backend developers, Docklog solves the probl
   - [Container Targeting](#container-targeting)
   - [Regex & Exclusion Filtering](#regex--exclusion-filtering)
   - [JSON & File Output](#json--file-output)
-  - [Spam Deduplication (Smell Error)](#spam-deduplication-smell-error)
+  - [Masking / Censoring (Redact)](#masking--censoring-redact)
+  - [Smell Error](#smell-error)
 - [Configuration](#configuration)
 - [Contributing](#contributing)
 
@@ -36,20 +34,22 @@ Designed for power-users, SREs, and backend developers, Docklog solves the probl
 
 ## Why Docklog?
 
-Standard Docker commands (`docker logs -f`) are limited when dealing with complex, multi-container environments. Third-party UI tools can be slow or bloated. Docklog provides a surgical CLI approach:
+`docker logs -f` works fine for a single container. But when you have a Postgres, Redis, and a backend service all running at the same time, you are opening multiple terminals, switching between tabs, and errors are scrolling away before you can read them.
 
-1. **Multiplexed Streaming:** Watch dozens of containers in a single terminal window, color-coded automatically.
+Docklog fixes this with a surgical CLI approach:
+
+1. **Multiplexed Streaming:** Watch all your containers in a single terminal window, color-coded by container name.
 2. **Zero-Overhead Filtering:** Drop noisy logs (e.g., health checks) before they ever reach your terminal.
 3. **Smart Deduplication:** Prevent aggressive error loops from burying the root cause with consecutive message suppression.
-4. **Structured Output:** Stream directly to JSON files for immediate ingestion by Splunk, ELK, or Datadog agents.
+4. **Structured Output:** Stream directly to JSON files for ingestion by Splunk, ELK, or Datadog agents.
 
 ---
 
 ## Architecture
 
-Docklog interfaces directly with the local Docker Engine API via the Unix socket (`/var/run/docker.sock` or Windows Pipe). 
+Docklog interfaces directly with the local Docker Engine API via the Unix socket (`/var/run/docker.sock` or Windows Pipe).
 
-It dynamically discovers running containers and listens for Docker Engine `start` and `die` events to attach or detach streams automatically, meaning you can start Docklog, and it will automatically pick up containers that are started later.
+It dynamically discovers running containers and listens for Docker Engine `start` and `die` events to attach or detach streams automatically — meaning you can start Docklog once, and it will automatically pick up containers that are started later.
 
 The internal **Aggregator** utilizes concurrent `io.Pipe` streams, processing Stdout and Stderr asynchronously through a centralized formatting and filtering pipeline, ensuring zero race conditions and thread-safe outputs.
 
@@ -58,29 +58,28 @@ The internal **Aggregator** utilizes concurrent `io.Pipe` streams, processing St
 ## Installation
 
 ### Using Go Install (Recommended)
+
 ```bash
 go install github.com/doguhanniltextra/docklog@latest
 ```
 
+Ensure your `$GOPATH/bin` is in your system's `$PATH`.
+
 ### From Source
-Ensure you have [Go 1.25+](https://go.dev/) installed.
+
+Ensure you have [Go 1.21+](https://go.dev/) installed.
 
 ```bash
-# Clone the repository
 git clone https://github.com/doguhanniltextra/docklog.git
 cd docklog
-
-# Build the binary
 go build -o docklog
 ```
-
-Ensure your `$GOPATH/bin` is in your system's `$PATH`.
 
 ---
 
 ## Getting Started
 
-To start streaming logs from all currently running containers:
+Start streaming logs from all currently running containers:
 
 ```bash
 docklog start
@@ -138,23 +137,32 @@ Automatically mask sensitive data (Emails, IPv4, Bearer Tokens, API Keys) in you
 docklog start --redact
 ```
 
-> **If you're working with AI, it's recommended to protect your passwords before you paste your mistakes into it.**
+> **If you're working with AI, it's recommended to protect your credentials before pasting logs into it.**
 
+### Smell Error
 
-### Spam Deduplication (Smell Error)
+This is Docklog's most powerful command, built specifically for debugging critical failures.
 
-Docklog comes with a specialized command specifically for debugging critical failures without being overwhelmed by recursive error spam.
+The problem: when a container starts crashing, it often spams the same error thousands of times per second. The root cause gets buried under the noise, and you end up scrolling endlessly trying to find where it actually started.
+
+`docklog smell-error` solves this by automatically filtering for errors and enabling deduplication — so each unique error is shown exactly once, no matter how many times it repeats.
 
 ```bash
-docklog start smell-error
+# Watch all containers for errors, deduplicated
+docklog smell-error
+
+# Target a specific broken container
+docklog smell-error --container "broken-postgres"
 ```
 
-This command enforces an `"error"` filter and enables the `--dedupe` flag. If a container spams the exact same error 10,000 times a second, Docklog will only print it **once**, until a different log is emitted.
+**Example scenario:** Your Postgres container fails to start because of a missing password. Instead of seeing the same authentication error 10,000 times, you see it once — clearly, immediately.
 
-You can also target specific broken containers:
-```bash
-docklog start smell-error --container "broken-postgres"
 ```
+ERROR [07:22:12.902] container="broken-postgres" Database is uninitialized and superuser password is not specified.
+ERROR [07:22:12.902] container="broken-postgres" You must specify POSTGRES_PASSWORD on docker run.
+```
+
+Root cause found. No scrolling required.
 
 ---
 
@@ -172,13 +180,13 @@ tail: "50"
 json: false
 ```
 
-Flags passed via the CLI will automatically override the values specified in the configuration file.
+Flags passed via the CLI will always override the values in the configuration file.
 
 ---
 
 ## Contributing
 
-We welcome contributions from the community! 
+Contributions are welcome.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
@@ -191,4 +199,4 @@ We welcome contributions from the community!
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License see the [LICENSE](LICENSE) file for details.
