@@ -61,6 +61,15 @@ func TestReadStream(t *testing.T) {
 			isError:    false,
 			wantOutput: []string{"INFO: starting", "INFO: ended"},
 		},
+		{
+			name: "Redact sensitive information",
+			cfg: &config.Config{
+				Redact: true,
+			},
+			input:      "User email is admin@company.com\nUser IP is 192.168.1.1\nAuth: Bearer abcdef12345=\nAPI Key is api_key: 'sk_test_123'\nNormal log message\n",
+			isError:    false,
+			wantOutput: []string{"User email is ***", "User IP is ***", "Auth: ***", "API Key is ***", "Normal log message"},
+		},
 	}
 
 	for _, tt := range tests {
