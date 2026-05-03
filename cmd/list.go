@@ -6,42 +6,50 @@ import (
 	"os"
 	"text/tabwriter"
 
-	"github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/client"
+	"github.com/doguhanniltextra/docklog/pkg/aggregator"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
 var listCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List currently running containers",
-	Run: func(cmd *cobra.Command, args []string) {
-		cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	Short: "List currently running containers and their monitoring status",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		cfg, err := buildConfig()
 		if err != nil {
-			fmt.Printf("Error creating Docker client: %v\n", err)
-			return
+			return err
 		}
 
-		containers, err := cli.ContainerList(context.Background(), container.ListOptions{})
+		agg, err := aggregator.New(cfg)
 		if err != nil {
-			fmt.Printf("Error listing containers: %v\n", err)
-			return
+			return err
+		}
+
+		containers, err := agg.ListContainers(context.Background())
+		if err != nil {
+			return fmt.Errorf("error listing containers: %v", err)
 		}
 
 		if len(containers) == 0 {
 			fmt.Println("No running containers found.")
-			return
+			return nil
 		}
 
 		w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-		fmt.Fprintln(w, "CONTAINER ID\tIMAGE\tNAME\tSTATUS")
+		fmt.Fprintln(w, "CONTAINER ID\tIMAGE\tNAME\tSTATUS\tDOCKLOG")
+
+		green := color.New(color.FgGreen, color.Bold)
+		gray := color.New(color.FgHiBlack)
+
 		for _, c := range containers {
-			name := "N/A"
-			if len(c.Names) > 0 {
-				name = c.Names[0][1:] // Remove leading slash
+			status := gray.Sprint("IGNORED")
+			if c.IsMatched {
+				status = green.Sprint("WATCHING")
 			}
-			fmt.Fprintf(w, "%s\t%s\t%s\t%s\n", c.ID[:12], c.Image, name, c.Status)
+			fmt.Fprintf(w, "%s\t%s\t%s\t%s\t%s\n", c.ID, c.Image, c.Name, c.Status, status)
 		}
 		w.Flush()
+		return nil
 	},
 }
 

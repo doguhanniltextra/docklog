@@ -37,6 +37,8 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.docklog.yaml or ./.docklog.yaml)")
+	rootCmd.PersistentFlags().StringP("container", "c", "", "Filter containers by a regular expression")
+	viper.BindPFlag("container", rootCmd.PersistentFlags().Lookup("container"))
 }
 
 func initConfig() {

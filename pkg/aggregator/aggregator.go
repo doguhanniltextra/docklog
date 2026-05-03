@@ -47,6 +47,16 @@ type LogMessage struct {
 	Timestamp time.Time `json:"timestamp"`
 }
 
+// ContainerStatus represents the monitoring state of a specific Docker container.
+type ContainerStatus struct {
+	ID        string
+	Name      string
+	Image     string
+	Status    string    // Docker status (e.g. "running")
+	Uptime    string    // Human readable uptime
+	IsMatched bool      // Whether it matches the current docklog filters
+}
+
 // Aggregator manages the lifecycle of concurrent log streams originating from
 // multiple Docker containers. It orchestrates the Docker Client API calls,
 // handles event-driven container discovery (start/die), and manages a centralized
@@ -131,6 +141,35 @@ func (a *Aggregator) Start(ctx context.Context) error {
 			}
 		}
 	}
+}
+
+// ListContainers performs a one-shot discovery of all running containers and
+// evaluates them against the aggregator's configuration. It returns a list of
+// ContainerStatus objects describing which containers would be monitored.
+func (a *Aggregator) ListContainers(ctx context.Context) ([]ContainerStatus, error) {
+	containers, err := a.cli.ContainerList(ctx, container.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	var results []ContainerStatus
+	for _, c := range containers {
+		name := a.getContainerName(c.Names)
+		isMatched := true
+		if a.cfg.ContainerFilter != nil && !a.cfg.ContainerFilter.MatchString(name) {
+			isMatched = false
+		}
+
+		results = append(results, ContainerStatus{
+			ID:        c.ID[:12],
+			Name:      name,
+			Image:     c.Image,
+			Status:    c.Status,
+			Uptime:    c.Status, // For now, Docker's .Status includes uptime like "Up 5 minutes"
+			IsMatched: isMatched,
+		})
+	}
+	return results, nil
 }
 
 func (a *Aggregator) getContainerName(names []string) string {
