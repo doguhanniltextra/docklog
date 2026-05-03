@@ -2,9 +2,6 @@
   <img src="utils/docklog.png" alt="Docklog Mascot" width="400">
 </p>
 
-> [!IMPORTANT]
-> **This project is currently under active development.** Features are subject to change, and we are working hard to reach a stable 1.0 release.
-
 <p align="center"><strong>Docklog</strong> is an optimized, multiplexed, real-time log aggregator and tracking CLI for Docker.</p>
 
 Running multiple Docker containers and keep missing errors because they scroll away in different terminals? Docklog aggregates all your container logs into a single, color-coded stream so you never lose an error again.
