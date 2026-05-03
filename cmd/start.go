@@ -60,6 +60,9 @@ func buildConfig() (*config.Config, error) {
 	if viper.GetBool("redact") {
 		cfg.Redact = true
 	}
+	if viper.GetBool("timestamps") {
+		cfg.ShowTimestamps = true
+	}
 	return cfg, nil
 }
 
@@ -117,6 +120,7 @@ func init() {
 	startCmd.PersistentFlags().BoolP("dedupe", "d", false, "Prevent consecutive identical logs from spamming")
 	startCmd.PersistentFlags().Bool("json", false, "Output logs in JSON format")
 	startCmd.PersistentFlags().Bool("redact", false, "Redact sensitive information (emails, IPv4, tokens)")
+	startCmd.PersistentFlags().Bool("timestamps", false, "Show timestamps from Docker daemon")
 
 	viper.BindPFlag("filter", startCmd.PersistentFlags().Lookup("filter"))
 	viper.BindPFlag("exclude", startCmd.PersistentFlags().Lookup("exclude"))
@@ -128,4 +132,5 @@ func init() {
 	viper.BindPFlag("dedupe", startCmd.PersistentFlags().Lookup("dedupe"))
 	viper.BindPFlag("json", startCmd.PersistentFlags().Lookup("json"))
 	viper.BindPFlag("redact", startCmd.PersistentFlags().Lookup("redact"))
+	viper.BindPFlag("timestamps", startCmd.PersistentFlags().Lookup("timestamps"))
 }

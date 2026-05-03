@@ -165,6 +165,7 @@ func (a *Aggregator) startContainerStream(ctx context.Context, id, name string) 
 			ShowStderr: true,
 			Follow:     true,
 			Tail:       a.cfg.TailLines,
+			Timestamps: a.cfg.ShowTimestamps,
 		}
 
 		if a.cfg.Since != "" {

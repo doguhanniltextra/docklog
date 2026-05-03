@@ -70,6 +70,11 @@ type Config struct {
 	// Redact enables the automatic redaction of sensitive information.
 	// When true, emails, IPv4 addresses, and tokens are replaced with "***".
 	Redact bool
+
+	// ShowTimestamps indicates whether the Docker log streams should include
+	// RFC3339 timestamps. Note that this is different from the local aggregation
+	// timestamp shown in the human-readable output.
+	ShowTimestamps bool
 }
 
 // DefaultConfig instantiates and returns the default configuration for the aggregator.
@@ -77,10 +82,11 @@ type Config struct {
 // and a generous buffer size to handle high-throughput environments.
 func DefaultConfig() *Config {
 	return &Config{
-		Filter:       "",
-		TailLines:    "10",
-		TimeFormat:   "15:04:05.000",
-		BufferLength: 1000,
+		Filter:         "",
+		TailLines:      "10",
+		TimeFormat:     "15:04:05.000",
+		BufferLength:   1000,
+		ShowTimestamps: false,
 		Colors: []*color.Color{
 			color.New(color.FgCyan),
 			color.New(color.FgGreen),
