@@ -6,12 +6,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// smellErrorCmd is a highly specialized child command of "start".
-// It is designed specifically to track down application panics, timeouts, and
-// critical failures across all (or a filtered subset) of running containers.
+// smellErrorCmd is a highly specialized command designed specifically to 
+// track down application panics, timeouts, and critical failures across 
+// all (or a filtered subset) of running containers.
 //
-// By inheriting configuration from startCmd, it respects global bounds (e.g. --container)
-// but forcibly overrides specific internal behaviors:
+// It respects global bounds (e.g. --container) but forcibly overrides 
+// specific internal behaviors for convenience:
 //  1. Enforces a case-insensitive substring filter for "error".
 //  2. Enables Deduplication to ensure that rapid error loops do not overwhelm
 //     the terminal output and bury the root cause.

@@ -38,7 +38,28 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.docklog.yaml or ./.docklog.yaml)")
 	rootCmd.PersistentFlags().StringP("container", "c", "", "Filter containers by a regular expression")
+	rootCmd.PersistentFlags().StringP("filter", "f", "", "Filter logs by a specific keyword (e.g., ERROR)")
+	rootCmd.PersistentFlags().StringP("exclude", "x", "", "Exclude logs containing a specific keyword")
+	rootCmd.PersistentFlags().StringP("regex", "r", "", "Filter logs using a regular expression")
+	rootCmd.PersistentFlags().StringP("since", "s", "", "Show logs since timestamp (e.g. 2013-01-02T13:23:37) or relative (e.g. 42m for 42 minutes)")
+	rootCmd.PersistentFlags().StringP("output", "o", "", "Output logs to a file (e.g., logs.txt)")
+	rootCmd.PersistentFlags().StringP("tail", "t", "10", "Number of lines to show from the end of the logs")
+	rootCmd.PersistentFlags().BoolP("dedupe", "d", false, "Prevent consecutive identical logs from spamming")
+	rootCmd.PersistentFlags().Bool("json", false, "Output logs in JSON format")
+	rootCmd.PersistentFlags().Bool("redact", false, "Redact sensitive information (emails, IPv4, tokens)")
+	rootCmd.PersistentFlags().Bool("timestamps", false, "Show timestamps from Docker daemon")
+
 	viper.BindPFlag("container", rootCmd.PersistentFlags().Lookup("container"))
+	viper.BindPFlag("filter", rootCmd.PersistentFlags().Lookup("filter"))
+	viper.BindPFlag("exclude", rootCmd.PersistentFlags().Lookup("exclude"))
+	viper.BindPFlag("regex", rootCmd.PersistentFlags().Lookup("regex"))
+	viper.BindPFlag("since", rootCmd.PersistentFlags().Lookup("since"))
+	viper.BindPFlag("output", rootCmd.PersistentFlags().Lookup("output"))
+	viper.BindPFlag("tail", rootCmd.PersistentFlags().Lookup("tail"))
+	viper.BindPFlag("dedupe", rootCmd.PersistentFlags().Lookup("dedupe"))
+	viper.BindPFlag("json", rootCmd.PersistentFlags().Lookup("json"))
+	viper.BindPFlag("redact", rootCmd.PersistentFlags().Lookup("redact"))
+	viper.BindPFlag("timestamps", rootCmd.PersistentFlags().Lookup("timestamps"))
 }
 
 func initConfig() {

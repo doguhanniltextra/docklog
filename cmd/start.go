@@ -87,26 +87,4 @@ and streams their logs to the terminal.`,
 
 func init() {
 	rootCmd.AddCommand(startCmd)
-
-	startCmd.PersistentFlags().StringP("filter", "f", "", "Filter logs by a specific keyword (e.g., ERROR)")
-	startCmd.PersistentFlags().StringP("exclude", "x", "", "Exclude logs containing a specific keyword")
-	startCmd.PersistentFlags().StringP("regex", "r", "", "Filter logs using a regular expression")
-	startCmd.PersistentFlags().StringP("since", "s", "", "Show logs since timestamp (e.g. 2013-01-02T13:23:37) or relative (e.g. 42m for 42 minutes)")
-	startCmd.PersistentFlags().StringP("output", "o", "", "Output logs to a file (e.g., logs.txt)")
-	startCmd.PersistentFlags().StringP("tail", "t", "10", "Number of lines to show from the end of the logs")
-	startCmd.PersistentFlags().BoolP("dedupe", "d", false, "Prevent consecutive identical logs from spamming")
-	startCmd.PersistentFlags().Bool("json", false, "Output logs in JSON format")
-	startCmd.PersistentFlags().Bool("redact", false, "Redact sensitive information (emails, IPv4, tokens)")
-	startCmd.PersistentFlags().Bool("timestamps", false, "Show timestamps from Docker daemon")
-
-	viper.BindPFlag("filter", startCmd.PersistentFlags().Lookup("filter"))
-	viper.BindPFlag("exclude", startCmd.PersistentFlags().Lookup("exclude"))
-	viper.BindPFlag("regex", startCmd.PersistentFlags().Lookup("regex"))
-	viper.BindPFlag("since", startCmd.PersistentFlags().Lookup("since"))
-	viper.BindPFlag("output", startCmd.PersistentFlags().Lookup("output"))
-	viper.BindPFlag("tail", startCmd.PersistentFlags().Lookup("tail"))
-	viper.BindPFlag("dedupe", startCmd.PersistentFlags().Lookup("dedupe"))
-	viper.BindPFlag("json", startCmd.PersistentFlags().Lookup("json"))
-	viper.BindPFlag("redact", startCmd.PersistentFlags().Lookup("redact"))
-	viper.BindPFlag("timestamps", startCmd.PersistentFlags().Lookup("timestamps"))
 }
