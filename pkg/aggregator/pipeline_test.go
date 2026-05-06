@@ -88,7 +88,6 @@ func TestPipeline(t *testing.T) {
 				{Message: "drop"},
 			},
 		}
-		// A processor that drops messages with "drop"
 		dropProc := &mockDropProcessor{}
 		snk := &MockSink{}
 
@@ -105,6 +104,22 @@ func TestPipeline(t *testing.T) {
 			t.Errorf("expected keep, got %s", snk.written[0].Message)
 		}
 	})
+
+	t.Run("Sink error", func(t *testing.T) {
+		src := &MockSource{
+			messages: []types.LogMessage{{Message: "msg"}},
+		}
+		snk := &errorSink{}
+
+		pipeline := NewPipeline(src, nil, snk, 10)
+		ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+		defer cancel()
+
+		err := pipeline.Run(ctx)
+		if err == nil {
+			t.Error("expected error from sink, got nil")
+		}
+	})
 }
 
 type mockDropProcessor struct{}
@@ -115,3 +130,13 @@ func (m *mockDropProcessor) Process(msg *types.LogMessage) (*types.LogMessage, b
 	}
 	return msg, true
 }
+
+type errorSink struct{}
+
+func (e *errorSink) Write(msg types.LogMessage) error {
+	return context.DeadlineExceeded // Just any error
+}
+
+func (e *errorSink) Close() error { return nil }
+
+

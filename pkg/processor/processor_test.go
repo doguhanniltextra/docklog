@@ -39,6 +39,20 @@ func TestFilterProcessor(t *testing.T) {
 			input:      "[123] log",
 			wantOutput: true,
 		},
+		{
+			name:       "Filter and Exclude both set (Keep)",
+			filter:     "success",
+			exclude:    "fail",
+			input:      "the operation was a success",
+			wantOutput: true,
+		},
+		{
+			name:       "Filter and Exclude both set (Drop due to exclude)",
+			filter:     "success",
+			exclude:    "fail",
+			input:      "the operation was a success but with a fail",
+			wantOutput: false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -95,9 +109,11 @@ func TestRedactProcessor(t *testing.T) {
 
 func TestDedupeProcessor(t *testing.T) {
 	p := NewDedupeProcessor()
-	msg1 := &types.LogMessage{Message: "duplicate"}
-	msg2 := &types.LogMessage{Message: "duplicate"}
-	msg3 := &types.LogMessage{Message: "new"}
+	
+	// Test single container deduplication
+	msg1 := &types.LogMessage{ContainerName: "c1", Message: "duplicate"}
+	msg2 := &types.LogMessage{ContainerName: "c1", Message: "duplicate"}
+	msg3 := &types.LogMessage{ContainerName: "c1", Message: "new"}
 
 	if _, keep := p.Process(msg1); !keep {
 		t.Error("expected first message to be kept")
@@ -108,7 +124,14 @@ func TestDedupeProcessor(t *testing.T) {
 	if _, keep := p.Process(msg3); !keep {
 		t.Error("expected third new message to be kept")
 	}
+
+	// Test cross-container isolation (same message, different container)
+	msg4 := &types.LogMessage{ContainerName: "c2", Message: "new"}
+	if _, keep := p.Process(msg4); !keep {
+		t.Error("expected message from different container to be kept even if content is same as c1's last message")
+	}
 }
+
 
 func TestLevelProcessor(t *testing.T) {
 	tests := []struct {
