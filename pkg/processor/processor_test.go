@@ -54,11 +54,42 @@ func TestFilterProcessor(t *testing.T) {
 }
 
 func TestRedactProcessor(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{
+			name:  "Redact email",
+			input: "contact admin@company.com",
+			want:  "contact ***",
+		},
+		{
+			name:  "Redact IPv4",
+			input: "connection from 192.168.1.1",
+			want:  "connection from ***",
+		},
+		{
+			name:  "Redact Bearer Token",
+			input: "Authorization: Bearer abc123def456",
+			want:  "Authorization: ***",
+		},
+		{
+			name:  "Redact API Key",
+			input: "api_key: secret-value-123",
+			want:  "***",
+		},
+	}
+
 	p := NewRedactProcessor()
-	msg := &types.LogMessage{Message: "User email is admin@company.com"}
-	got, _ := p.Process(msg)
-	if got.Message != "User email is ***" {
-		t.Errorf("expected redacted message, got %q", got.Message)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			msg := &types.LogMessage{Message: tt.input}
+			got, _ := p.Process(msg)
+			if got.Message != tt.want {
+				t.Errorf("expected %q, got %q", tt.want, got.Message)
+			}
+		})
 	}
 }
 
@@ -78,3 +109,82 @@ func TestDedupeProcessor(t *testing.T) {
 		t.Error("expected third new message to be kept")
 	}
 }
+
+func TestLevelProcessor(t *testing.T) {
+	tests := []struct {
+		name          string
+		allowedLevels []string
+		input         string
+		wantKeep      bool
+	}{
+		{
+			name:          "Match error level",
+			allowedLevels: []string{"ERROR"},
+			input:         "ERROR: something went wrong",
+			wantKeep:      true,
+		},
+		{
+			name:          "Mismatch level",
+			allowedLevels: []string{"ERROR"},
+			input:         "INFO: business as usual",
+			wantKeep:      false,
+		},
+		{
+			name:          "Case insensitive match",
+			allowedLevels: []string{"warn"},
+			input:         "WARNING: check this",
+			wantKeep:      true,
+		},
+		{
+			name:          "Multiple levels match",
+			allowedLevels: []string{"INFO", "DEBUG"},
+			input:         "debug log message",
+			wantKeep:      true,
+		},
+		{
+			name:          "No levels specified (pass all)",
+			allowedLevels: []string{},
+			input:         "any message",
+			wantKeep:      true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := NewLevelProcessor(tt.allowedLevels)
+			msg := &types.LogMessage{Message: tt.input}
+			_, keep := p.Process(msg)
+			if keep != tt.wantKeep {
+				t.Errorf("LevelProcessor.Process() keep = %v, want %v", keep, tt.wantKeep)
+			}
+		})
+	}
+}
+
+func TestLimitProcessor(t *testing.T) {
+	doneCalled := false
+	onDone := func() {
+		doneCalled = true
+	}
+
+	p := NewLimitProcessor(2, onDone)
+	msg := &types.LogMessage{Message: "msg"}
+
+	// First message
+	if _, keep := p.Process(msg); !keep {
+		t.Error("expected first message to be kept")
+	}
+	// Second message
+	if _, keep := p.Process(msg); !keep {
+		t.Error("expected second message to be kept")
+	}
+	// Third message (should be dropped)
+	if _, keep := p.Process(msg); keep {
+		t.Error("expected third message to be dropped")
+	}
+
+	if !doneCalled {
+		t.Error("expected done callback to be called")
+	}
+}
+
