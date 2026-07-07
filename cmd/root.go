@@ -48,6 +48,8 @@ func init() {
 	rootCmd.PersistentFlags().Bool("json", false, "Output logs in JSON format")
 	rootCmd.PersistentFlags().Bool("redact", false, "Redact sensitive information (emails, IPv4, tokens)")
 	rootCmd.PersistentFlags().Bool("timestamps", false, "Show timestamps from Docker daemon")
+	rootCmd.PersistentFlags().Bool("no-color", false, "Disable colored output (useful for piping or CI)")
+	rootCmd.PersistentFlags().Int("buffer", 1000, "Size of the internal log channel buffer")
 
 	viper.BindPFlag("container", rootCmd.PersistentFlags().Lookup("container"))
 	viper.BindPFlag("filter", rootCmd.PersistentFlags().Lookup("filter"))
@@ -60,6 +62,8 @@ func init() {
 	viper.BindPFlag("json", rootCmd.PersistentFlags().Lookup("json"))
 	viper.BindPFlag("redact", rootCmd.PersistentFlags().Lookup("redact"))
 	viper.BindPFlag("timestamps", rootCmd.PersistentFlags().Lookup("timestamps"))
+	viper.BindPFlag("no-color", rootCmd.PersistentFlags().Lookup("no-color"))
+	viper.BindPFlag("buffer", rootCmd.PersistentFlags().Lookup("buffer"))
 }
 
 func initConfig() {

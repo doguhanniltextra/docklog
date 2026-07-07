@@ -67,6 +67,9 @@
                 <li><code>--tail, -t</code>: Set initial buffer size from historical logs (Default: 10 lines).</li>
                 <li><code>--since, -s</code>: Temporal filter for historical logs (RFC3339 or duration e.g., 5m).</li>
                 <li><code>--output, -o</code>: Specifies a file path for persistent serialization.</li>
+                <li><code>--timestamps</code>: Show exact timestamps retrieved directly from the Docker daemon.</li>
+                <li><code>--no-color</code>: Disables colored terminal output (essential for piping to other tools or CI).</li>
+                <li><code>--buffer</code>: Size of the internal log channel buffer for high-throughput stream tuning (Default: 1000).</li>
             </ul>
         </section>
 

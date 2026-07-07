@@ -82,6 +82,10 @@ type Config struct {
 	// RFC3339 timestamps. Note that this is different from the local aggregation
 	// timestamp shown in the human-readable output.
 	ShowTimestamps bool
+
+	// NoColor disables all ANSI color codes in the terminal output.
+	// Useful for piping to files, grep, or running in CI environments.
+	NoColor bool
 }
 
 // DefaultConfig instantiates and returns the default configuration for the aggregator.

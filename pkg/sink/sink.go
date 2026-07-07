@@ -3,6 +3,7 @@
 package sink
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -33,8 +34,8 @@ func NewConsoleSink(f formatter.Formatter) *ConsoleSink {
 
 // Write outputs the message to the console.
 func (s *ConsoleSink) Write(msg types.LogMessage) error {
-	fmt.Print(s.formatter.Format(msg))
-	return nil
+	_, err := fmt.Fprint(os.Stdout, s.formatter.Format(msg))
+	return err
 }
 
 // Close is a no-op for the console sink.
@@ -94,8 +95,11 @@ func (m *MultiSink) Write(msg types.LogMessage) error {
 
 // Close gracefully shuts down all child sinks.
 func (m *MultiSink) Close() error {
+	var errs []error
 	for _, s := range m.sinks {
-		s.Close()
+		if err := s.Close(); err != nil {
+			errs = append(errs, err)
+		}
 	}
-	return nil
+	return errors.Join(errs...)
 }

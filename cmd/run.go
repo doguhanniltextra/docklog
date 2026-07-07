@@ -13,10 +13,16 @@ import (
 	"github.com/doguhanniltextra/docklog/pkg/processor"
 	"github.com/doguhanniltextra/docklog/pkg/sink"
 	"github.com/doguhanniltextra/docklog/pkg/source/docker"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
 func runPipeline(cfg *config.Config) error {
+	// Apply color settings before creating any formatters
+	if cfg.NoColor {
+		color.NoColor = true
+	}
+
 	// Initialize Source
 	src, err := docker.NewDockerSource(cfg)
 	if err != nil {

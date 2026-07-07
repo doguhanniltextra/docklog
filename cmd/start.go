@@ -17,48 +17,49 @@ import (
 // Returns an error if any regex filters provided by the user are invalid.
 func buildConfig() (*config.Config, error) {
 	cfg := config.DefaultConfig()
-	if filter := viper.GetString("filter"); filter != "" {
-		cfg.Filter = filter
+
+	// String fields — Viper resolves from flags/env/config file with correct defaults
+	cfg.Filter = viper.GetString("filter")
+	cfg.Exclude = viper.GetString("exclude")
+	cfg.Since = viper.GetString("since")
+	cfg.Output = viper.GetString("output")
+	cfg.TailLines = viper.GetString("tail")
+
+	// Boolean fields — zero-value (false) is already the default in DefaultConfig
+	cfg.Deduplicate = viper.GetBool("dedupe")
+	cfg.JsonOutput = viper.GetBool("json")
+	cfg.Redact = viper.GetBool("redact")
+	cfg.ShowTimestamps = viper.GetBool("timestamps")
+	cfg.NoColor = viper.GetBool("no-color")
+
+	// Integer fields
+	cfg.BufferLength = viper.GetInt("buffer")
+
+	// Regex fields — these need validation, extracted into a helper
+	if err := compileRegexFlag("regex", &cfg.RegexFilter); err != nil {
+		return nil, err
 	}
-	if exclude := viper.GetString("exclude"); exclude != "" {
-		cfg.Exclude = exclude
+	if err := compileRegexFlag("container", &cfg.ContainerFilter); err != nil {
+		return nil, err
 	}
-	if regexStr := viper.GetString("regex"); regexStr != "" {
-		r, err := regexp.Compile(regexStr)
-		if err != nil {
-			return nil, fmt.Errorf("invalid regex: %v", err)
-		}
-		cfg.RegexFilter = r
-	}
-	if contStr := viper.GetString("container"); contStr != "" {
-		r, err := regexp.Compile(contStr)
-		if err != nil {
-			return nil, fmt.Errorf("invalid container regex: %v", err)
-		}
-		cfg.ContainerFilter = r
-	}
-	if since := viper.GetString("since"); since != "" {
-		cfg.Since = since
-	}
-	if out := viper.GetString("output"); out != "" {
-		cfg.Output = out
-	}
-	if tail := viper.GetString("tail"); tail != "" {
-		cfg.TailLines = tail
-	}
-	if viper.GetBool("dedupe") {
-		cfg.Deduplicate = true
-	}
-	if viper.GetBool("json") {
-		cfg.JsonOutput = true
-	}
-	if viper.GetBool("redact") {
-		cfg.Redact = true
-	}
-	if viper.GetBool("timestamps") {
-		cfg.ShowTimestamps = true
-	}
+
 	return cfg, nil
+}
+
+// compileRegexFlag reads a Viper string key and compiles it into a *regexp.Regexp.
+// If the key is empty, the target is left as nil. Returns a descriptive error
+// if the pattern is invalid.
+func compileRegexFlag(key string, target **regexp.Regexp) error {
+	pattern := viper.GetString(key)
+	if pattern == "" {
+		return nil
+	}
+	r, err := regexp.Compile(pattern)
+	if err != nil {
+		return fmt.Errorf("invalid --%s regex %q: %v", key, pattern, err)
+	}
+	*target = r
+	return nil
 }
 
 // startCmd represents the primary entry point for the standard logging behavior.

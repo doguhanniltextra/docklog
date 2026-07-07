@@ -1,5 +1,8 @@
 # Makefile for Docklog
 
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+LDFLAGS := -ldflags "-X github.com/doguhanniltextra/docklog/pkg/config.Version=$(VERSION)"
+
 .PHONY: audit build test clean help
 
 # Default target
@@ -14,7 +17,7 @@ help:
 
 ## build: Build the docklog binary for the current platform
 build:
-	go build -o docklog .
+	go build $(LDFLAGS) -o docklog .
 
 ## test: Run all Go tests
 test:
